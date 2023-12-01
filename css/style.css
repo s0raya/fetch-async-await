@@ -66,3 +66,15 @@ header {
 #searchBtn:hover, #prevBtn:hover, #nextBtn:hover, #resetBtn:hover {
   opacity: 0.8;
 }
+
+figure {
+  border: 5px gray;
+  border-radius: 5%;
+  background-color: white;
+}
+
+figure div {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
