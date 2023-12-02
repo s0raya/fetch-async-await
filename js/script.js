@@ -5,20 +5,22 @@ const nextBtn = document.getElementById("nextBtn")
 const resetBtn = document.getElementById("resetBtn")
 const app = document.getElementById("app")
 const url = 'https://pokeapi.co/api/v2/pokemon?limit=10';
+const favourites = document.getElementById('favourites');
 
 const printPokemonList = (pokemonList) => {
-    app.innerHTML = "";
-    pokemonList.forEach((pokemon) => {
-        
-        app.innerHTML += `
-        <figure>
-            <img src="https://img.pokemondb.net/sprites/home/normal/${pokemon.name}.png" alt="${pokemon.name}">
-            <figcaption>        
-                <div>${capitalizerFirstLetter(pokemon.name)}</div>
-            </figcaption>
-        </figure>    
+    htmlCode = "";
+    pokemonList.forEach((pokemon) => {      
+        htmlCode += `
+            <figure onclick="chageColor(this)">
+                <img src="https://img.pokemondb.net/sprites/home/normal/${pokemon.name}.png" alt="${pokemon.name}">
+                <figcaption id="namePokemon">        
+                    <div>${capitalizerFirstLetter(pokemon.name)}</div>
+                </figcaption>
+            </figure>  
         `
     });
+    
+    app.innerHTML = htmlCode;
 }
 
 const getPokemon = async(url) => {
@@ -29,7 +31,6 @@ const getPokemon = async(url) => {
         }
         const pokemon = await res.json();
         printPokemonList(pokemon.results)
-        console.log(pokemon)
     } catch (error) {
         console.error(error)
         app.innerHTML = error
@@ -67,12 +68,47 @@ searchBtn.addEventListener('click', async () => {
         if (!res.ok) {
             throw new Error("Pokemon no encontrado");
         }
-        const pokemonName = await res.json();
+        const singlePokemon = await res.json();
+        app.innerHTML = "";
+        app.innerHTML += `
+        <div>
+            <figure>
+                <img src="https://img.pokemondb.net/sprites/home/normal/${singlePokemon.name}.png" alt="${singlePokemon.name}">
+                <figcaption>
+                    <div>${capitalizerFirstLetter(singlePokemon.name)}</div>
+                </figcaption>
+            </figure>
+        </div>`;
     } catch (error) {
         console.error(error);
         app.innerHTML = error;
     }
 });
+
+resetBtn.addEventListener('click', () => location.reload());
+
+/********************************Favoritos ***************************/
+
+const chageColor = (obj) => {
+    if (obj.style.backgroundColor === '') {
+        obj.style.backgroundColor = 'green';
+        const storageFavourites = getFavourites();
+        localStorage.setItem('pokemonFavourite', obj.outerHTML);
+
+    } else {
+        obj.removeAttribute('style');
+    }
+}
+
+function getFavourites(){
+    const cardPokemonFavourite = localStorage.getItem('pokemonFavourite');
+    return cardPokemonFavourite ? JSON.parse(cardPokemonFavourite) : [];
+}
+
+favourites.addEventListener('click', () => {
+})
+
+
 
 
 
