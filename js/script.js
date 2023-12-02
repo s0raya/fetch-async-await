@@ -7,20 +7,29 @@ const app = document.getElementById("app")
 const url = 'https://pokeapi.co/api/v2/pokemon?limit=10';
 const favourites = document.getElementById('favourites');
 
+function drawHTML(name, fav = false) {
+    const style = fav ? 'style="background-color: green;"' : "";
+    app.innerHTML += `
+    <div>
+        <figure ${style} onclick="changeColor(this, '${name}')">
+            <img src="https://img.pokemondb.net/sprites/home/normal/${name}.png" alt="${name}">
+            <figcaption id="namePokemon">        
+                <div>${capitalizerFirstLetter(name)}</div>
+            </figcaption>
+        </figure>
+    </div>`;
+}
+
 const printPokemonList = (pokemonList) => {
-    htmlCode = "";
-    pokemonList.forEach((pokemon) => {      
-        htmlCode += `
-            <figure onclick="chageColor(this)">
-                <img src="https://img.pokemondb.net/sprites/home/normal/${pokemon.name}.png" alt="${pokemon.name}">
-                <figcaption id="namePokemon">        
-                    <div>${capitalizerFirstLetter(pokemon.name)}</div>
-                </figcaption>
-            </figure>  
-        `
+    const storageFavourites = loadFavouritesLocalStorage();
+    app.innerHTML = "";
+    pokemonList.forEach((pokemon) => {
+        let fav = false;
+        if (pokemon.name in storageFavourites) {
+            fav = true;
+        }
+        drawHTML(pokemon.name, fav);
     });
-    
-    app.innerHTML = htmlCode;
 }
 
 const getPokemon = async(url) => {
@@ -37,7 +46,7 @@ const getPokemon = async(url) => {
     }
 };
 
-getPokemon(url)
+getPokemon(url);
 
 function capitalizerFirstLetter(name) {
     return name.charAt(0).toUpperCase() + name.slice(1);
@@ -59,7 +68,7 @@ prevBtn.addEventListener('click', () => {
         getPokemon(newUrl)
          console.log('Este botón va hacia atras')
      }
-})
+});
 
 searchBtn.addEventListener('click', async () => {
     const pokemonName = searchInput.value.toLowerCase();
@@ -70,42 +79,43 @@ searchBtn.addEventListener('click', async () => {
         }
         const singlePokemon = await res.json();
         app.innerHTML = "";
-        app.innerHTML += `
-        <div>
-            <figure>
-                <img src="https://img.pokemondb.net/sprites/home/normal/${singlePokemon.name}.png" alt="${singlePokemon.name}">
-                <figcaption>
-                    <div>${capitalizerFirstLetter(singlePokemon.name)}</div>
-                </figcaption>
-            </figure>
-        </div>`;
+        drawHTML(singlePokemon.name);
     } catch (error) {
         console.error(error);
         app.innerHTML = error;
     }
 });
 
-resetBtn.addEventListener('click', () => location.reload());
+resetBtn.addEventListener('click', () => {
+    localStorage.clear();
+    location.reload()
+});
 
 /********************************Favoritos ***************************/
 
-const chageColor = (obj) => {
+const changeColor = (obj, name) => {
+    const storageFavourites = loadFavouritesLocalStorage();
     if (obj.style.backgroundColor === '') {
         obj.style.backgroundColor = 'green';
-        const storageFavourites = getFavourites();
-        localStorage.setItem('pokemonFavourite', obj.outerHTML);
-
+        storageFavourites[name] = obj.outerHTML;
     } else {
         obj.removeAttribute('style');
+        delete storageFavourites[name];
     }
+    localStorage.setItem('pokemonFavourite', JSON.stringify(storageFavourites));
 }
 
-function getFavourites(){
+function loadFavouritesLocalStorage(){
     const cardPokemonFavourite = localStorage.getItem('pokemonFavourite');
-    return cardPokemonFavourite ? JSON.parse(cardPokemonFavourite) : [];
+    return cardPokemonFavourite ? JSON.parse(cardPokemonFavourite) : {};
 }
 
 favourites.addEventListener('click', () => {
+    const storageFavourites = loadFavouritesLocalStorage();
+    app.innerHTML = "";
+    Object.entries(storageFavourites).forEach((pokemon) => {  
+        drawHTML(pokemon[0]);
+    });
 })
 
 
