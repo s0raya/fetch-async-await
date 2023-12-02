@@ -45,7 +45,7 @@ header {
   border-radius: 4px;
 }
 
-#searchBtn, #prevBtn, #nextBtn, #resetBtn, #favorites {
+#searchBtn, #prevBtn, #nextBtn, #resetBtn, #favourites {
   margin: 10px 0;
   padding: 10px;
   border: none;
@@ -58,12 +58,12 @@ header {
   color: white;
 }
 
-#prevBtn, #nextBtn, #resetBtn, #favorites {
+#prevBtn, #nextBtn, #resetBtn, #favourites {
   background-color: #2196F3;
   color: white;
 }
 
-#searchBtn:hover, #prevBtn:hover, #nextBtn:hover, #resetBtn:hover, #favorites:hover {
+#searchBtn:hover, #prevBtn:hover, #nextBtn:hover, #resetBtn:hover, #favourites:hover {
   opacity: 0.8;
 }
 
@@ -79,8 +79,4 @@ figure div {
   justify-content: center;
   font-weight: bold;
   padding: 20px;
-}
-
-.styleFavorites {
-  background-color: green;
 }
